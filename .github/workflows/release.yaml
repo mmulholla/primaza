@@ -151,4 +151,4 @@ jobs:
           token: ${{ secrets.MM_TOKEN }}
           repository: mmulholla/primazactl
           event-type: primaza-release
-          client-payload: {"version": ${{ env.VERSION }} }
+          client-payload: '{"version": "${{ env.VERSION }}"}'
