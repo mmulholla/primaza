@@ -145,3 +145,11 @@ jobs:
             ${{ env.OUT_DIR }}/${{ env.CRDS_CONFIG_FILE }}
             ${{ env.OUT_DIR }}/${{ env.APPLICATION_NAMESPACE_CONFIG_FILE }}
             ${{ env.OUT_DIR }}/${{ env.SERVICE_NAMESPACE_CONFIG_FILE }}
+
+      - name: Repository Dispatch
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.MM_TOKEN }}
+          repository: mmulholla/primazactl
+          event-type: primaza-release
+          client-payload: {"version": ${{ env.VERSION }} }
