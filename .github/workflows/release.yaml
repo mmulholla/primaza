@@ -53,19 +53,19 @@ jobs:
         run: |
           # set version based on dispatch type
           version="latest"
-          draft-release="true"
-          trigger-primazactl="true"
+          draft_release="true"
+          trigger_primazactl="true"
           if [[ "${{github.event_name}}" == "workflow_dispatch" ]]; then
             version=${{ github.event.inputs.version }}
-            trigger-primazactl=${{ github.event.inputs.trigger-primazactl }}
+            trigger_primazactl=${{ github.event.inputs.trigger-primazactl }}
           elif [[ "${{github.ref_type}}" == "tag" ]]; then
             version=${{ github.ref_name }}
           elif [[ "${{github.event_name}}" == "repository_dispatch" ]]; then
-            draft-release="false"
+            draft_release="false"
             version=${{ github.event.client_payload.version }}
           fi
-          echo "DRAFT_RELEASE=$draft-release >> $GITHUB_ENV
-          echo "TRIGGER_PRIMAZACTL=$trigger-primazactl >> $GITHUB_ENV
+          echo "DRAFT_RELEASE=$draft_release >> $GITHUB_ENV
+          echo "TRIGGER_PRIMAZACTL=$trigger_primazactl >> $GITHUB_ENV
           echo "VERSION=$version" >> $GITHUB_ENV
           echo "CONTROL_PLANE_CONFIG_FILE=control_plane_config_$version.yaml" >> $GITHUB_ENV
           echo "CRDS_CONFIG_FILE=crds_config_$version.yaml" >> $GITHUB_ENV
