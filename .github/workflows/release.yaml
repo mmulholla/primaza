@@ -57,7 +57,7 @@ jobs:
           trigger_primazactl="true"
           if [[ "${{github.event_name}}" == "workflow_dispatch" ]]; then
             version=${{ github.event.inputs.version }}
-            trigger_primazactl=${{ github.event.inputs.trigger-primazactl }}
+            trigger_primazactl="${{ github.event.inputs.trigger-primazactl }}"
           elif [[ "${{github.ref_type}}" == "tag" ]]; then
             version=${{ github.ref_name }}
           elif [[ "${{github.event_name}}" == "repository_dispatch" ]]; then
