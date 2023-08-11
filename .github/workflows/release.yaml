@@ -86,7 +86,7 @@ jobs:
         run: mkdir -p ${{ env.OUT_DIR }}
 
       - name: Delete previous release and tag
-        if: ${{ env.VERSION == 'latest' || env.Version == "nightly" }}
+        if: ${{ env.VERSION == 'latest' || env.Version == 'nightly' }}
         uses: dev-drprasad/delete-tag-and-release@v1.0.1
         with:
           delete_release: true # default: false
@@ -163,7 +163,7 @@ jobs:
             ${{ env.OUT_DIR }}/${{ env.SERVICE_NAMESPACE_CONFIG_FILE }}
 
       - name: Trigger primazactl test and release
-        if: {{ $env.TRIGGER_PRIMAZACTL == "true" }}
+        if: {{ $env.TRIGGER_PRIMAZACTL == 'true' }}
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.MM_TOKEN }}
