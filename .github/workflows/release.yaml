@@ -16,7 +16,7 @@ on:  # yamllint disable-line rule:truthy
         default: "false"
       trigger-primazactl:
         description: "trigger primazactl release process"
-        require: true
+        required: true
         default: "false"
 
   repository_dispatch:
@@ -163,7 +163,7 @@ jobs:
             ${{ env.OUT_DIR }}/${{ env.SERVICE_NAMESPACE_CONFIG_FILE }}
 
       - name: Trigger primazactl test and release
-        if: {{ $env.TRIGGER_PRIMAZACTL == 'true' }}
+        if: ${{ env.TRIGGER_PRIMAZACTL == 'true' }}
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.MM_TOKEN }}
