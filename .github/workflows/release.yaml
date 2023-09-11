@@ -63,15 +63,19 @@ jobs:
             version=${{ github.event.inputs.version }}
             draft_release="${{ github.event.inputs.draft-release }}"
             trigger_primazactl="${{ github.event.inputs.trigger-primazactl }}"
+            build_image="${{ github.event.inputs.build-image }}"
           elif [[ "${{github.ref_type}}" == "tag" ]]; then
             version=${{ github.ref_name }}
+            build_image="true"
           elif [[ "${{github.event_name}}" == "repository_dispatch" ]]; then
             draft_release="false"
             version=${{ github.event.client_payload.version }}
+            build_image="true"
           fi
           echo "DRAFT_RELEASE=$draft_release" >> $GITHUB_ENV
           echo "TRIGGER_PRIMAZACTL=$trigger_primazactl" >> $GITHUB_ENV
           echo "VERSION=$version" >> $GITHUB_ENV
+          echo "BUILD_IMAGE=$build_image" >> $GITHUB_ENV
           echo "CONTROL_PLANE_CONFIG_FILE=control_plane_config_$version.yaml" >> $GITHUB_ENV
           echo "CRDS_CONFIG_FILE=crds_config_$version.yaml" >> $GITHUB_ENV
           echo "APPLICATION_NAMESPACE_CONFIG_FILE=application_namespace_config_$version.yaml" >> $GITHUB_ENV
@@ -100,7 +104,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 'Build and Push Images'
-        if: ${{ github.event_name != 'workflow_dispatch' || github.event.inputs.build-image == 'true' }}
+        if: ${{ env.BUILD_IMAGE }} == 'true'
         uses: ./.github/actions/push-ghcr
         with:
           registry: ${{ env.REGISTRY }}
@@ -120,9 +124,9 @@ jobs:
               --from-literal agentsvc-image=${IMG_SVC} )
           ${{ env.KUSTOMIZE }} build config/default > ${{ env.OUT_DIR }}/${{ env.CONTROL_PLANE_CONFIG_FILE }}
         env:
-          IMG: ghcr.io/primaza/primaza:${{ env.VERSION }}
-          IMG_APP: ghcr.io/primaza/primaza-agentapp:${{ env.VERSION }}
-          IMG_SVC: ghcr.io/primaza/primaza-agentsvc:${{ env.VERSION }}
+          IMG: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          IMG_APP: ghcr.io/${{ env.IMAGE_NAME }}-agentapp:${{ env.VERSION }}
+          IMG_SVC: ghcr.io/${{ env.IMAGE_NAME }}-agentsvc:${{ env.VERSION }}
 
       - name: 'Build manifests: CRDs'
         run: |
@@ -170,8 +174,16 @@ jobs:
       - name: Trigger primazactl test and release
         if: ${{ env.TRIGGER_PRIMAZACTL == 'true' }}
         uses: peter-evans/repository-dispatch@v2
+        env:
+          IMG: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
+          IMG_APP: ghcr.io/${{ env.IMAGE_NAME }}-agentapp:${{ env.VERSION }}
+          IMG_SVC: ghcr.io/${{ env.IMAGE_NAME }}-agentsvc:${{ env.VERSION }}
         with:
           token: ${{ secrets.MM_TOKEN }}
           repository: mmulholla/primazactl
           event-type: primazactl-test
-          client-payload: '{"version": "${{ env.VERSION }}"}'
+          client-payload: '{"version": "${{ env.VERSION }}",
+                            "primaza_image": "${{ env.IMG }}",
+                            "app_image": "${{ env.IMG_APP }}",
+                            "svc_image": "${{ env.IMG_SVC }}"}'
+
