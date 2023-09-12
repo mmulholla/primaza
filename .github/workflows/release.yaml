@@ -15,7 +15,7 @@ on:  # yamllint disable-line rule:truthy
         required: true
         default: "false"
       draft-release:
-        description: :should release be a draft only"
+        description: "should release be a draft only"
         required: true
         default: "true"
       trigger-primazactl:
@@ -24,7 +24,7 @@ on:  # yamllint disable-line rule:truthy
         default: "false"
 
   repository_dispatch:
-    types: [ primaza-release ]
+    types: [primaza-release]
 
 
 permissions:
@@ -174,16 +174,9 @@ jobs:
       - name: Trigger primazactl test and release
         if: ${{ env.TRIGGER_PRIMAZACTL == 'true' }}
         uses: peter-evans/repository-dispatch@v2
-        env:
-          IMG: ghcr.io/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
-          IMG_APP: ghcr.io/${{ env.IMAGE_NAME }}-agentapp:${{ env.VERSION }}
-          IMG_SVC: ghcr.io/${{ env.IMAGE_NAME }}-agentsvc:${{ env.VERSION }}
         with:
           token: ${{ secrets.MM_TOKEN }}
           repository: mmulholla/primazactl
           event-type: primazactl-test
           client-payload: '{"version": "${{ env.VERSION }}",
-                            "primaza_image": "${{ env.IMG }}",
-                            "app_image": "${{ env.IMG_APP }}",
-                            "svc_image": "${{ env.IMG_SVC }}"}'
-
+                            "organization": "${{ github.repository_owner }}"}'
