@@ -95,7 +95,7 @@ jobs:
         run: mkdir -p ${{ env.OUT_DIR }}
 
       - name: Delete previous release and tag
-        if: ${{ env.VERSION == 'latest' || env.Version == 'nightly' }}
+        if: ${{ env.VERSION == 'latest' || env.VERSION == 'nightly' }}
         uses: dev-drprasad/delete-tag-and-release@v1.0.1
         with:
           delete_release: true # default: false
