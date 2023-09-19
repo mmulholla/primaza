@@ -176,7 +176,7 @@ jobs:
         uses: peter-evans/repository-dispatch@v2
         with:
           token: ${{ secrets.MM_TOKEN }}
-          repository: mmulholla/primazactl
+          repository: ${{ github.repository_owner }}/primazactl
           event-type: primazactl-test
           client-payload: '{"version": "${{ env.VERSION }}",
                             "organization": "${{ github.repository_owner }}"}'
